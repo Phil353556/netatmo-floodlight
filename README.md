@@ -79,6 +79,10 @@ export  NA_DEBUG=1
 or
 export NA_DEBUG=true
 
+# Example
+![image](https://github.com/Phil353556/netatmo-floodlight/assets/64729485/dfcf15e6-2dfa-45e8-8136-8bb6d81f7972)
+
+
 To desactivate the debug mode
 export  NA_DEBUG=0
 or
