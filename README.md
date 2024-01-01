@@ -6,8 +6,8 @@ It is able to manage several "home" and several cameras per home.
 
 # How to start 
 1/ go the netatmo url: https://dev.netatmo.com/apps
-   and create an application
-   with the following scopes    read_presence write_presence access_presence
+   and create an application with the following scopes
+   **read_presence write_presence access_presence**
    note the values of  client_id,  home_id, access_token and refresh_token
 
 2/ modify the script with your values. The variables using these values are at the beginning of the script
@@ -20,16 +20,16 @@ $access_token = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxx|xxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
 $refresh_token = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxx|xxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
 
 3/ run the script with homelist option
-  $ ./netatmo_floodlight.php homelist
+  $ **./netatmo_floodlight.php homelist**
   a list of your home  (ie home_id) you have access to is display
   then
   use the value of one home and move forward with light list options 
 
-  $ ./netatmo_floodlight.php 000000000000000000000000 light list 
+  $ **./netatmo_floodlight.php 000000000000000000000000 light list **
   all cameras for this home are displayed 
   pick the value for one camera and move forward with the action you want to apply for this floodlight
 
-  $ ./netatmo_floodlight.php 000000000000000000000000 light current  00:00:00:00:00:00
+  $ **./netatmo_floodlight.php 000000000000000000000000 light current  00:00:00:00:00:00**
 
   current: display the active mode for this camera
   auto:  switch the mode for this camera to auto
