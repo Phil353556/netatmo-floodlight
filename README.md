@@ -36,6 +36,18 @@ $refresh_token = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxx|xxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
 
 3/ run the script with no option, the help is displayed
 
+# Return codes 
+
+0 : ok                                                                       /
+1 : no option or option is usage or invalid option                           
+2 : exit following homelist option                                           
+3 : no external camera for this home in function get_homedata_forhome        
+4 : no external camera detected in function get_homestatus_NOC               
+5 : Invalid device id in function get_light_mode                             
+6 : error doing action in function in function set_light                     
+7 : invalid client or invalid grant in function get_token: check contents of variable
+
+
 # usage - the help
 $ ./netatmo_floodlight.php 
  ---------------------------------------------------------------------- 
