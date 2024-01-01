@@ -11,20 +11,33 @@ It is able to manage several "home" and several cameras per home.
    note the values of  client_id,  home_id, access_token and refresh_token
 
 2/ modify the script with your values. The variables using these values are at the beginning of the script
-/*------------------------------------------------------------------------------*/
-/* ONLY modify these FOUR variables with your data                              */
-/*------------------------------------------------------------------------------*/
 $client_id="xxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
 $client_secret="xxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
-
 $access_token = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxx|xxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
 $refresh_token = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxx|xxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
-/*------------------------------------------------------------------------------*/
 
+3/ run the script with homelist option
+  $ ./netatmo_floodlight.php homelist
+  a list of your home  (ie home_id) you have access to is display
+  then
+  use the value of one home and move forward with light list options 
 
+  $ ./netatmo_floodlight.php 000000000000000000000000 light list 
+  all cameras for this home are displayed 
+  pick the value for one camera and move forward with the action you want to apply for this floodlight
+
+  $ ./netatmo_floodlight.php 000000000000000000000000 light current  00:00:00:00:00:00
+
+  current: display the active mode for this camera
+  auto:  switch the mode for this camera to auto
+  on  : switch the floodlight of this camera ON
+  off  : switch the floodlight of this camera OFF
+  list : list all camera (ie all device id) for this home
+
+3/ run the script with no option, the help is displayed
 
 # usage - the help
-$ ./netatmo_light.php 
+$ ./netatmo_floodlight.php 
  ---------------------------------------------------------------------- 
  Usage: [usage|home id|homelist] <light> [auto|on|off|current|list] [list|device id] 
                                                                         
@@ -45,3 +58,13 @@ device id
           00:00:00:00:00:00 (example format)                            
  ---------------------------------------------------------------------- 
  
+# Debug mode
+if you want to activate the debug mode 
+export  NA_DEBUG=1 
+or
+export NA_DEBUG=true
+
+To desactivate the debug mode
+export  NA_DEBUG=0
+or
+export NA_DEBUG=false
