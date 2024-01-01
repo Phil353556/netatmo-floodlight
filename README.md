@@ -4,6 +4,7 @@ Management of floodlight for Netatmo external camera
 The goal of this script is the management of floodlight of Neatmo external camera.
 It is able to manage several "home" and several cameras per home.
 
+# usage
 $ ./netatmo_light.php 
  ---------------------------------------------------------------------- 
  Usage: [usage|home id|homelist] <light> [auto|on|off|current|list] [list|device id] 
