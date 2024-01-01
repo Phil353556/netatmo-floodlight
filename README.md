@@ -12,8 +12,11 @@ It is able to manage several "home" and several cameras per home.
 
 2/ modify the script with your values. The variables using these values are at the beginning of the script
 $client_id="xxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
+
 $client_secret="xxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
+
 $access_token = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxx|xxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
+
 $refresh_token = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxx|xxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
 
 3/ run the script with homelist option
