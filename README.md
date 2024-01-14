@@ -28,6 +28,7 @@ $refresh_token = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxx|xxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
   $ **./netatmo_floodlight.php 000000000000000000000000 light list **
   all cameras for this home are displayed 
   pick the value for one camera and move forward with the action you want to apply for this floodlight
+  
   replace 000000000000000000000000 and 00:00:00:00:00:00  with your values obtained,
 
   $ **./netatmo_floodlight.php 000000000000000000000000 light current  00:00:00:00:00:00**
