@@ -44,7 +44,7 @@ $refresh_token = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxx|xxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
 
 # Return codes 
 
-0 : ok  - everything is fine                                                                     /
+0 : ok - everything is fine
 1 : no option or option is usage or invalid option                           
 2 : exit following homelist option                                           
 3 : no external camera for this home in function get_homedata_forhome        
