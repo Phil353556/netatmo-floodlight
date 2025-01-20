@@ -4,6 +4,8 @@ Management of floodlight for Netatmo external camera
 The goal of this script is the management of floodlight of Neatmo external camera.
 It is able to manage several "home" and several cameras per home.
 
+# no more functionnal since end of 2022. username / password are no more authorized by Netatmo
+
 # How to start 
 1/ go the netatmo url: https://dev.netatmo.com/apps
    and create an application with the following scopes
