@@ -4,24 +4,10 @@ Management of floodlight for Netatmo external camera
 The goal of this script is the management of floodlight of Neatmo external camera.
 It is able to manage several "home" and several cameras per home.
 
-# no more functionnal since end of 2022. username / password are no more authorized by Netatmo
-
 # How to start 
-1/ go the netatmo url: https://dev.netatmo.com/apps
-   and create an application with the following scopes
-   **read_presence write_presence access_presence**
-   note the values of  client_id,  home_id, access_token and refresh_token
-
-2/ modify the script with your values. The variables using these values are at the beginning of the script
-$client_id="xxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
-
-$client_secret="xxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
-
-$access_token = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxx|xxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
-
-$refresh_token = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxx|xxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
-
-3/ run the script with homelist option
+1/ Use the netatmo_manage_tokens.php script from the same user. It will allow you to manage access_token and refresh token
+   
+2/ Run the script with homelist option
   $ **./netatmo_floodlight.php homelist**
   a list of your home  (ie home_id) you have access to is display
   then
@@ -41,28 +27,17 @@ $refresh_token = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxx|xxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
   off  : switch the floodlight of this camera OFF
   list : list all camera (ie all device id) for this home
 
-3/ run the script with no option, the help is displayed
+3/ Run the script with no option, the help is displayed
 
 # Example
-![image](https://github.com/Phil353556/netatmo-floodlight/assets/64729485/dfcf15e6-2dfa-45e8-8136-8bb6d81f7972)
 
-# Return codes 
-
-0 : ok - everything is fine
-
-1 : no option or option is usage or invalid option                           
-2 : exit following homelist option                                           
-3 : no external camera for this home in function get_homedata_forhome        
-4 : no external camera detected in function get_homestatus_NOC               
-5 : Invalid device id in function get_light_mode                             
-6 : error doing action in function in function set_light                     
-7 : invalid client or invalid grant in function get_token: check contents of variable
-
-
+![image](https://github.com/user-attachments/assets/852c4ed0-32c6-44d8-965f-0f4351031098)
+  
 # usage - the help
-$ ./netatmo_floodlight.php 
- ---------------------------------------------------------------------- 
- Usage: [usage|home id|homelist] <light> [auto|on|off|current|list] [list|device id] 
+
+``$ ./netatmo_floodlight.php  
+  -----------------------------------------------------------------------------------  
+ 2025-01-25 17:11:54Z (UTC)                                 
                                                                         
  usage                                                                  
           this help                                                     
@@ -75,19 +50,54 @@ $ ./netatmo_floodlight.php
           action will be applied on this device                         
                                                                         
  <light action>                                                         
-          auto or on or off or current or list                                                                                                                                              
-device id                                                              
+          auto or on or off or current or list, use list first          
+                                                                        
+ device id                                                              
           use list without <device id> first, to obtain device id       
           00:00:00:00:00:00 (example format)                            
- ---------------------------------------------------------------------- 
- 
-# Debug mode
-if you want to activate the debug mode 
-export  NA_DEBUG=1 
-or
-export NA_DEBUG=true
+                                                                        
+ Examples:                                                              
+ ./netatmo_light.php homelist                                           
+ ./netatmo_light.php 5xxxxxxxxxxxxxxxxxxxxxc light list                 
+ ./netatmo_light.php 5xxxxxxxxxxxxxxxxxxxxxc light current 7x:xx:xx:xx:xx:x4   
+ ./netatmo_light.php 5xxxxxxxxxxxxxxxxxxxxxc light on  7x:xx:xx:xx:xx:x4  
+ -----------------------------------------------------------------------------------   `
 
-To desactivate the debug mode
-export  NA_DEBUG=0
-or
-export NA_DEBUG=false
+ # Return codes by function 
+
+function f_get_homedata($access_token,$home_id)  
+   10 : No camera available for this home  
+  
+function f_get_homedata_forhome($access_token)    
+   20 : Error in general an issue with the access_token  
+          
+function f_get_homestatus_NOC($access_token,$home_id)  
+   30 : Error in general an issue with the access_token  
+   31 : No camera available for this home  
+  
+function f_set_light_mode($access_token,$home_id,$id,$state)      
+   40 : Error from the server for this action requested  
+          
+function f_get_light_mode($access_token,$home_id,$id)                     
+   50 : Invalid device ID  
+  
+function f_usage()                                        
+    -> no return code  
+  
+Main routine  
+   101 : usage was the first parameter  
+   102 : the file file_access_token.txt cannot be open  
+   103 : homelist was the first parameter   
+   104 : number of parameters incorrect  
+   105 : parameters not valids  
+
+# Debug mode  
+if you want to activate the debug mode   
+export  NA_DEBUG=1   
+or  
+export NA_DEBUG=true  
+
+To desactivate the debug mode  
+export  NA_DEBUG=0  
+or  
+export NA_DEBUG=false  
