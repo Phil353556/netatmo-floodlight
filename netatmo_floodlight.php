@@ -1,7 +1,7 @@
 #!/usr/bin/php
 <?php
 /*------------------------------------------------------------------------------*/
-/* 2024/01/01 (c) Phil353556 github.com                                         */
+/* 2025/01/25 (c) Phil353556 github.com                                         */
 /*  email: 51y9oj579@relay.firefox.com                                          */
 /*                                                                              */
 /* This piece of software is as IS with no Warranty. Use it of your own risk!   */
@@ -9,144 +9,71 @@
 /*------------------------------------------------------------------------------*/
 
 /*------------------------------------------------------------------------------*/
-/* The goal is to manage floodlight for external camera from Netatmo brand	*/
-/* Run the script without any parameter to display the help			*/
+/* The goal is to manage floodlight camera from Netatmo 			*/
+/* Run the script without any parameter to display the usage                    */
 /*------------------------------------------------------------------------------*/
-/* list of function used							*/
-/*										*/
-/* function get_token($grant_type,$client_id,$client_secret,$scope,$Content_Type)*/
-/* function get_homedata($access_token,$home_id)				*/
-/* function get_homedata_forhome($access_token)					*/
-/* function get_homestatus_NOC($access_token,$home_id)				*/
-/* function usage()								*/
-/* function set_light_mode($access_token,$home_id,$id,$state)			*/
-/* function get_light_mode($access_token,$home_id,$id)				*/
-/*------------------------------------------------------------------------------*/
-/* Return codes 								*/
-/* 0 : ok									*/
-/* 1 : no option or option is usage or invalid option 				*/
-/* 2 : exit following homelist option						*/
-/* 3 : no external camera for this home in function get_homedata_forhome	*/
-/* 4 : no external camera detected in function get_homestatus_NOC		*/
-/* 5 : Invalid device id in function get_light_mode				*/
-/* 6 : error doing action in function in function set_light			*/
-/* 7 : invalid client or invalid grant in function get_token: check contents of variable*/
-/*------------------------------------------------------------------------------*/
+/* list of function used                                                        */
+/*                                                                              */
+/* function f_get_homedata($access_token,$home_id)				*/
+/* function f_get_homedata_forhome($access_token)				*/
+/* function f_get_homestatus_NOC($access_token,$home_id)			*/
+/* function f_usage()								*/
+/* function f_set_light_mode($access_token,$home_id,$id,$state)			*/
+/* function f_get_light_mode($access_token,$home_id,$id)			*/
+/*------------------------------------------------------------------------------
+Return codes by function:
 
-/*------------------------------------------------------------------------------*/
-/* ONLY modify these FOUR variables with your data 				*/
-/*------------------------------------------------------------------------------*/
-$client_id="xxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
-$client_secret="xxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
+function f_get_homedata($access_token,$home_id)
+   10 : No camera available for this home
 
-$access_token = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxx|xxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
-$refresh_token = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxx|xxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
-/*------------------------------------------------------------------------------*/
-// Scopes
-// Access tokens are associated to a scope, when requesting one, you should precise which scope you require. There are nine available scopes:
-//     read_station: to retrieve weather station data (Getstationsdata, Getmeasure)
-//     read_thermostat: to retrieve thermostat data ( Homestatus, Getroommeasure...)
-//     write_thermostat: to set up the thermostat (Synchomeschedule, Setroomthermpoint...)
-//     read_camera: to retrieve Smart Indoor Cameradata (Gethomedata, Getcamerapicture...)
-//     write_camera: to inform the Smart Indoor Camera that a specific person or everybody has left the Home (Setpersonsaway, Setpersonshome)
-//     access_camera: to access the camera, the videos and the live stream *
-//     read_presence: to retrieve Smart Outdoor Camera data (Gethomedata, Getcamerapicture...)
-//     access_presence: to access the camera, the videos and the live stream *
-//     read_smokedetector : to retrieve the Smart Smoke Alarm informations and events (Gethomedata, Geteventsuntil...)
-//     read_homecoach: to read data coming from Smart Indoor Air Quality Monitor (gethomecoachsdata)
-// If no scope is provided during the token request, the default is "read_station"
-/*------------------------------------------------------------------------------*/
-/* This is the minimum scope mandatory for this script -------------------------*/
-/* and yes access_presence is mandatory to get the current mode ----------------*/
-/* otherwise error at the end of function get_light_mode 			*/
-/* PHP Warning:  Undefined array key "floodlight" in /home/phermes/netatmo_light.php  */
-/*------------------------------------------------------------------------------*/
-$grant_type = "refresh_token";
-$scope = "read_presence write_presence access_presence";
-$Content_Type="application/x-www-form-urlencoded;charset=UTF-8";
+function f_get_homedata_forhome($access_token)	
+   20 : Error in general an issue with the access_token
 
-/*------------------------------------------------------------------------------*/
-/* Get authorization from netatmo using client_id, client_secret and *token  ---*/
-/*------------------------------------------------------------------------------*/
-function get_token($grant_type,$client_id,$client_secret,$scope,$Content_Type)
-{
-global $access_token;
-global $refresh_token;
+function f_get_homestatus_NOC($access_token,$home_id)
+   30 : Error in general an issue with the access_token
+   31 : No camera available for this home
 
-$handle = curl_init();
-$datas = array("grant_type"=>$grant_type,"client_id"=>$client_id,"scope"=>$scope);
+function f_set_light_mode($access_token,$home_id,$id,$state)	
+   40 : Error from the server for this action requested
 
-global $DEBUG;
-if (( $DEBUG == true))
-{
-	print "grant type : $grant_type \n";
-	print "client_id : $client_id \n";
-	print "client_secret : $client_secret \n";
-	print "refresh_token : $refresh_token \n";
-	print "scope : $scope \n";
-}
-$datas = array("grant_type"=>$grant_type,"client_id"=>$client_id,"client_secret"=>$client_secret,"refresh_token"=>$refresh_token,"scope"=>$scope);
+function f_get_light_mode($access_token,$home_id,$id)			
+   50 : Invalid device ID
 
-curl_setopt_array($handle, array(
-        CURLOPT_URL => "https://api.netatmo.com/oauth2/token",
-        CURLOPT_POST => 1,
-        CURLOPT_POSTFIELDS => $datas,
-        CURLOPT_RETURNTRANSFER => true
-        )
-);
+function f_usage()					
+    -> no return code
 
-$result=curl_exec($handle);
-curl_close($handle);
-$array = json_decode($result, true);
-if ( $DEBUG == true )
-{
- 	var_dump($array);
-}
-
-if ( isset($array['error']) )
-	{
-		print " ERROR ".$array['error']."\n";
-		if ( isset($array['error_description']) )
-		{
-		print " ERROR ".$array['error_description']."\n";
-		}
-		exit(7);
-	}
-$handle = curl_init();
-
-return [$array['access_token'],$array['refresh_token'],$array['expires_in']]; 
-}
+Main routine
+   101 : usage was the first parameter
+   102 : the file file_access_token.txt cannot be open
+   103 : homelist was the first parameter 
+   104 : number of parameters incorrect
+   105 : parameters not valids
 
 /* --------------------------------------------------------------------------- */
+/* Get the list of external camera for this home                               */
 /* --------------------------------------------------------------------------- */
-/* --------------------------------------------------------------------------- */
-function get_homedata($access_token,$home_id)
+function f_get_homedata($access_token,$home_id)
 {
 global $DEBUG;
 if ( $DEBUG == true )
 {	
-	echo " ------------------------------------------------------------- \n";
-	echo " GET homedata \n";
-	echo " ------------------------------------------------------------- \n";
+	printf(" ----------------------------------------------------------------------------------- \n");
+	printf(" function: f_get_homedata							     \n");
+	printf(" ----------------------------------------------------------------------------------- \n");
 }	
-
-$datas = array('NOC');
-$datas2 = array(
-        'home_id' => $home_id,
-        'device_types' => $datas
-);
-$datas3 = json_encode($datas2);
-
 
 $handle = curl_init();
 curl_setopt_array($handle, array(
-        CURLOPT_URL => "https://api.netatmo.com/api/homesdata",
-        CURLOPT_POSTFIELDS => $datas3,
+        CURLOPT_URL => "https://api.netatmo.com/api/homesdata?home_id=$home_id&device_types=NOC",
         CURLOPT_RETURNTRANSFER => true
         )
 );
 
-curl_setopt($handle, CURLOPT_VERBOSE, false);
+if ( $DEBUG == true )
+{
+	curl_setopt($handle, CURLOPT_VERBOSE, false);
+}
+
 curl_setopt($handle, CURLOPT_HTTPHEADER, array(
    'Content-Type: application/json',
    'Authorization: Bearer ' . $access_token
@@ -156,6 +83,7 @@ curl_setopt($handle, CURLOPT_HTTPHEADER, array(
 $result=curl_exec($handle);
 curl_close($handle);
 $array = json_decode($result, true);
+
 if ( $DEBUG == true ) 
 {
 	var_dump($array);
@@ -163,24 +91,27 @@ if ( $DEBUG == true )
 
 if (!isset ($array['body']['homes'][0]['modules']))
 {
-	print "NO CAMERA\n";
-	exit(3);
+	printf("NO CAMERA\n");
+	exit(10);
 }
+
 return [$array];
-
 }
 
 /* --------------------------------------------------------------------------- */
-/* Get list of available home ------------------------------------------------ */
+/* Get list of available home                                                  */
 /* --------------------------------------------------------------------------- */
-function get_homedata_forhome($access_token)
+function f_get_homedata_forhome($access_token)
 {
 global $DEBUG;
+printf(" ----------------------------------------------------------------------------------- \n");
+printf(" ".date('Y-m-d H:i:s\Z',time())." (UTC)                                 \n\n");
+
 if ( $DEBUG == true )
 {	
-	echo " ------------------------------------------------------------- \n";
-	echo " GET homedata \n";
-	echo " ------------------------------------------------------------- \n";
+	printf(" ----------------------------------------------------------------------------------- \n");
+	printf(" function: f_get_homedata_forhome						     \n");
+	printf(" ----------------------------------------------------------------------------------- \n");
 }	
 
 
@@ -191,7 +122,11 @@ curl_setopt_array($handle, array(
         )
 );
 
-curl_setopt($handle, CURLOPT_VERBOSE, false);
+if ( $DEBUG == true )
+{
+	curl_setopt($handle, CURLOPT_VERBOSE, false);
+}
+
 curl_setopt($handle, CURLOPT_HTTPHEADER, array(
    'Content-Type: application/json',
    'Authorization: Bearer ' . $access_token
@@ -200,53 +135,58 @@ curl_setopt($handle, CURLOPT_HTTPHEADER, array(
 
 $result=curl_exec($handle);
 curl_close($handle);
-global $DEBUG;
 $array = json_decode($result, true);
+
 if ( $DEBUG == true ) 
 {
 	var_dump($array);
 }
 
+if ( isset($array['error']) )
+	{
+		printf(" ERROR ".$array['error']['message']."\n");
+		exit(20);
+	}
+
+
 if (isset ($array['body']['homes']) )
 {
 	foreach ($array['body']['homes'] as $value)
 	{
-	print " ".$value['id']." ".$value['name']."\n";
+		printf(" ".$value['id']." ".$value['name']."\n");
 	}
 }
-return [$array];
 
+return [$array];
 }
 
 /* --------------------------------------------------------------------------- */
-/* Get -- P R O D U C T I O N ------------------------------------------------ */
+/* Get all data for this home                                                  */
 /* --------------------------------------------------------------------------- */
-function get_homestatus_NOC($access_token,$home_id)
+function f_get_homestatus_NOC($access_token,$home_id)
 {
 global $DEBUG;
 if ( $DEBUG == true )
 {
-	echo " ------------------------------------------------------------- \n";
-	echo " GET homestatus \n";
-	echo " ------------------------------------------------------------- \n";
+	printf(" ----------------------------------------------------------------------------------- \n");
+	printf(" function: f_get_homestatus_NOC  						     \n");
+	printf(" ----------------------------------------------------------------------------------- \n");
+	printf(" access token: -".$access_token."-                                                   \n");
 }
 
-$datas = array('NOC');
-$datas2 = array(
-        'home_id' => $home_id,
-	'device_types' => $datas
-);
-$datas3 = json_encode($datas2);
 
 $handle = curl_init();
 curl_setopt_array($handle, array(
-        CURLOPT_URL => "https://api.netatmo.com/api/homestatus",
-        CURLOPT_POSTFIELDS => $datas3,
+        CURLOPT_URL => "https://api.netatmo.com/api/homestatus?home_id=$home_id&device_types=NOC",
         CURLOPT_RETURNTRANSFER => true
         )
 );
 
-curl_setopt($handle, CURLOPT_VERBOSE, false);
+if ( $DEBUG == true )
+{
+	curl_setopt($handle, CURLOPT_VERBOSE, true);
+}
+
 curl_setopt($handle, CURLOPT_HTTPHEADER, array(
    'Content-Type: application/json',
    'Authorization: Bearer ' . $access_token
@@ -256,112 +196,116 @@ curl_setopt($handle, CURLOPT_HTTPHEADER, array(
 $result=curl_exec($handle);
 curl_close($handle);
 $array = json_decode($result, true);
-if ( isset($array['error']) )
-	{
-		print " ERROR ".$array['error']['message']."\n";
-		exit(4);
-	}
-if (!isset ($array['body']))
-{
-	print "NO CAMERA\n";
-	print " ERROR ".$array['error']['message']."\n";
-	exit(4);
-}
+
 if ( $DEBUG == true )
 {
 	var_dump($array);
 }
+if ( isset($array['error']) )
+	{
+		printf(" ERROR ".$array['error']['message']."\n");
+		exit(30);
+	}
+
+if (!isset ($array['body']))
+{
+	printf("NO CAMERA\n");
+	exit(31);
+}
+
 return [$array];
 }
 
 /*------------------------------------------------------------------------------*/
-/* Display the help for this script                                             */
+/* Action on external foodlight                                                 */
 /*------------------------------------------------------------------------------*/
-function usage()
+function f_set_light_mode($access_token,$home_id,$id,$state)
 {
-echo " ---------------------------------------------------------------------- \n";
-echo " Usage: [usage|home id|homelist] <light> [auto|on|off|current|list] [list|device id] \n";
-echo "                                                                        \n";
-echo " usage                                                                  \n";
-echo "          this help                                                     \n";
-echo "                                                                        \n";
-echo " home id                                                                \n";
-echo "          home id for an home. Use homelist first to get home id        \n";
-echo "          000000000000000000000000 (example format)                     \n"; 
-echo "                                                                        \n";
-echo " light                                                                  \n";
-echo "          action will be applied on this device                         \n";
-echo "                                                                        \n";
-echo " <light action>                                                         \n";
-echo "          auto or on or off or current or list                          \n";
-echo "                                                                        \n";
-echo " device id                                                              \n";
-echo "          use list without <device id> first, to obtain device id       \n";
-echo "          00:00:00:00:00:00 (example format)                            \n";
-echo " ---------------------------------------------------------------------- \n";
+global $DEBUG;
+if ( $DEBUG == true )
+{
+	printf(" ----------------------------------------------------------------------------------- \n");
+	printf(" function: f_set_light_mode      						     \n");
+	printf(" ----------------------------------------------------------------------------------- \n");
 }
 
-/*------------------------------------------------------------------------------*/
-/* Action done on external foodlight -------------------------------------------*/
-/*------------------------------------------------------------------------------*/
-function set_light_mode($access_token,$home_id,$id,$state)
-{
+$handle = curl_init();
 
 $datas = '{"home":{"id":"'.$home_id.'","modules":[{"id":"'.$id.'","floodlight":"'.$state.'"}]}}';
 
-$handle = curl_init();
 curl_setopt_array($handle, array(
-        CURLOPT_URL => "https://api.netatmo.com/api/setstate",
-        CURLOPT_CUSTOMREQUEST => 'POST',
-        CURLOPT_POST => 1,
-        CURLOPT_POSTFIELDS => $datas,
-        CURLOPT_RETURNTRANSFER => true
-        )
-);
-
-curl_setopt($handle, CURLOPT_VERBOSE, false);
+  CURLOPT_URL => 'https://api.netatmo.com/api/setstate',
+  CURLOPT_RETURNTRANSFER => true,
+  CURLOPT_ENCODING => '',
+  CURLOPT_MAXREDIRS => 10,
+  CURLOPT_TIMEOUT => 0,
+  CURLOPT_FOLLOWLOCATION => true,
+  CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+  CURLOPT_CUSTOMREQUEST => 'POST',
+  CURLOPT_POSTFIELDS => $datas,
+));
 curl_setopt($handle, CURLOPT_HTTPHEADER, array(
    'Content-Type: application/json',
    'Authorization: Bearer ' . $access_token
-   ));
-
-$result=curl_exec($handle);
+	)
+);
+$response = curl_exec($handle);
 curl_close($handle);
-$array = json_decode($result, true);
 
-if ( isset($array['error']) )
+if ( $DEBUG == true )
+{
+	var_dump($response);
+}
+
+if ( is_string($response) )
+{
+	if ( (str_contains($response, 'ok')) AND (str_contains($response, 'time_server')) )  {
+		$pos1 = strpos($response,',');
+		$sub1=substr($response, $pos1);
+		$pos2 = strpos($sub1,':');
+		$sub2=substr($sub1, $pos2+1,10);
+		printf(" OK from server: ".date('Y-m-d H:i:s\Z',$sub2)." \n");
+	}
+	else
 	{
-		print " ERROR ".$array['error']['message']."\n";
-		exit(6);
+		printf(" ----------------------------------------------------------------------------------- \n");
+		printf(" ERROR from server: \n");
+		var_dump($response);
+		exit(40);
 	}
 }
 
+}
+
 /*------------------------------------------------------------------------------*/
+/* Get the current mode for the external camera in parameter                    */
 /*------------------------------------------------------------------------------*/
-/*------------------------------------------------------------------------------*/
-function get_light_mode($access_token,$home_id,$id)
+function f_get_light_mode($access_token,$home_id,$id)
 {
 global $DEBUG;
-[ $result ] = get_homestatus_NOC($access_token,$home_id);  
+[ $result ] = f_get_homestatus_NOC($access_token,$home_id);  
 if ( $DEBUG == true )
-{
-	print "  get light mode \n";
-}
+{	
+	printf(" ----------------------------------------------------------------------------------- \n");
+	printf(" function: f_get_light_mode      						     \n");
+	printf(" ----------------------------------------------------------------------------------- \n");
+}	
 $found = 0;
-foreach ($result['body']['home']['modules'] as $value)
+
+foreach ($result ['body']['home']['modules'] as $value)
 {
 	if ( $DEBUG == true )
 	{
-		print " Light : ".$value['floodlight']."\n";
-		print " id : ".$value['id']."\n";
-		print " id cli : ".$id."\n";
+		printf(" Light : ".$value['floodlight']."\n");
+		printf(" id : ".$value['id']."\n");
+		printf(" id cli : ".$id."\n");
 	}
 	$pos = strpos($value['type'],'NOC');
 	if  ( $pos == 0 )
 	{
 		if ( $DEBUG == true) 
 		{
-		       print " Light : ".$value['floodlight']."\n";
+		       printf(" Light : ".$value['floodlight']."\n");
 		}
 		if ( $id == $value['id'] )
 		{
@@ -370,11 +314,11 @@ foreach ($result['body']['home']['modules'] as $value)
 
 		if ( $DEBUG == true )
 		{
-			print " Camera : ".$value['type']."\n";
-			print " firmware : ".$value['firmware_revision']."\n";
-			print " id : ".$value['id']."\n";
-			print " Wifi state : ".$value['wifi_state']."\n";
-			print " Wifi quality : ".$value['wifi_strength']."\n";
+			printf(" Camera : ".$value['type']."\n");
+			printf(" firmware : ".$value['firmware_revision']."\n");
+			printf(" id : ".$value['id']."\n");
+			printf(" Wifi state : ".$value['wifi_state']."\n");
+			printf(" Wifi quality : ".$value['wifi_strength']."\n");
 		}
 	}
    if ( $found == 1 ) 
@@ -384,19 +328,51 @@ foreach ($result['body']['home']['modules'] as $value)
 }
 if ( $found == 0 ) 
 {
-	print " ERROR Invalid device id \n";
-	exit(5);
+	printf(" ----------------------------------------------------------------------------------- \n");
+	printf(" ERROR Invalid device id 							     \n");
+	exit(50);
 }
+
 return($value['floodlight']);
+}
+
+/*------------------------------------------------------------------------------*/
+/* Display the help for this script                                             */
+/*------------------------------------------------------------------------------*/
+function f_usage()
+{
+printf(" ----------------------------------------------------------------------------------- \n");
+printf(" ".date('Y-m-d H:i:s\Z',time())." (UTC)                                 \n");
+printf("                                                                        \n");
+printf(" usage                                                                  \n");
+printf("          this help                                                     \n");
+printf("                                                                        \n");
+printf(" home id                                                                \n");
+printf("          home id for an home. Use homelist first to get home id        \n");
+printf("          000000000000000000000000 (example format)                     \n"); 
+printf("                                                                        \n");
+printf(" light                                                                  \n");
+printf("          action will be applied on this device                         \n");
+printf("                                                                        \n");
+printf(" <light action>                                                         \n");
+printf("          auto or on or off or current or list, use list first          \n");
+printf("                                                                        \n");
+printf(" device id                                                              \n");
+printf("          use list without <device id> first, to obtain device id       \n");
+printf("          00:00:00:00:00:00 (example format)                            \n");
+printf("                                                                        \n");
+printf(" Examples:                                                              \n");
+printf(" ./netatmo_light.php homelist                                           \n");
+printf(" ./netatmo_light.php 5xxxxxxxxxxxxxxxxxxxxxc light list                 \n");
+printf(" ./netatmo_light.php 5xxxxxxxxxxxxxxxxxxxxxc light current 7x:xx:xx:xx:xx:x4 \n");
+printf(" ./netatmo_light.php 5xxxxxxxxxxxxxxxxxxxxxc light on  7x:xx:xx:xx:xx:x4\n");
+printf(" ----------------------------------------------------------------------------------- \n");
 }
 
 /*------------------------------------------------------------------------------*/
 /* Main Routine 								*/
 /*------------------------------------------------------------------------------*/
 /*  https://dev.netatmo.com/apidocumentation/                                   */
-/* Historic of rain data							*/
-/*   Getting the historic of the rain data					*/
-/*   (mean, min/max and min/max dates)						*/
 /*------------------------------------------------------------------------------*/
 global $DEBUG;
 $env = getenv('NA_DEBUG');
@@ -407,16 +383,16 @@ if ( ( $env == 0) || $env == "false")
 if ( ( $env == 1) || $env == "true") 
 {
 	$DEBUG = 1;
-	print " --------------------------------------------\n";
-	print " DEBUG is ON \n";
-	print " --------------------------------------------\n";
+	printf(" ----------------------------------------------------------------------------------- \n");
+        printf(" DEBUG is ON                                                                         \n");
+        printf(" ----------------------------------------------------------------------------------- \n");
 }
 
 if (( $DEBUG == true)) { var_dump($argv); }
 $argc = count($argv);
-if (( $DEBUG == true)) {print " argc : ".$argc."\n";}
+if (( $DEBUG == true)) {printf(" argc : ".$argc."\n");}
 
-if ( ( $argc != 2 ) AND ( $argc != 4 ) AND ( $argc != 5 ) ) { usage(); exit(1); }
+if ( ( $argc != 2 ) AND ( $argc != 4 ) AND ( $argc != 5 ) ) { f_usage(); exit(1); }
 if ( $DEBUG == true )
 {
 	var_dump($argv);
@@ -425,46 +401,66 @@ if (isset($argc))
 {
 	if ( $argv[1] == "usage" )
 	{
-		usage();
-		exit(1);
+		f_usage();
+		exit(101);
 	}
 	/* -------------------------------------------------------------------------------- */
-	/*  activate or desactivate light on camera 					    */
+	/*  Retrieve access token store in the file 					    */
 	/* -------------------------------------------------------------------------------- */
-	[$access_token, $refresh_token, $expire_token ] = get_token($grant_type,$client_id,$client_secret,$scope,$Content_Type);
+	$file_access_token="file_access_token.txt";
+
 	if ( $DEBUG == true )
 	{
-		echo " atoken ".$access_token."\n rtoken ".$refresh_token."\n etoken ".$expire_token."\n" ;
+		printf(" Retrieve access token store in file : ".$file_access_token." \n");
 	}
+
+	if (!$myfile = @fopen($file_access_token, 'r')) {
+        	printf(" The file cannot be open: $file_access_token \n");
+        	exit(102);
+	}
+	$access_token=str_replace("\n","",fread($myfile,filesize($file_access_token)));
+	fclose($myfile);
+
 	/* -------------------------------------------------------------------------------- */
-	/*  activate or desactivate light on camera 					    */
+	/*  get all the home id for this account    					    */
 	/* -------------------------------------------------------------------------------- */
 	if ( $argv[1] == "homelist" )
 	{
-		get_homedata_forhome($access_token);
-		exit(2);
+		f_get_homedata_forhome($access_token);
+		printf(" ----------------------------------------------------------------------------------- \n");
+		exit(103);
 	}
 	$home_id = $argv[1];
 	/* -------------------------------------------------------------------------------- */
-	/*  activate or desactivate light on camera 					    */
+	/*  activate,desactivate, list and current state for the floodlight on camera       */
 	/* -------------------------------------------------------------------------------- */
 	if ( ( $argv[2] == "light" ) AND ( ( $argv[3] == "on" ) ||  ($argv[3] == "off" ) || ( $argv[3] == "auto") || ($argv[3] == "list") || ($argv[3] == "current") ) )
     	{
 		$light_action = $argv[3];
 		if ( $DEBUG == true )
 		{
-			print " ----- light : ".$light_action."\n";
+			printf(" ----- light : ".$light_action."\n");
 		}
 		if ( $argv[3] == "list" )
 		{
-			[ $result2 ]  = get_homedata($access_token,$home_id);
+			printf(" ----------------------------------------------------------------------------------- \n");
+			printf(" ".date('Y-m-d H:i:s\Z',time())." (UTC)                                 \n\n");
+			[ $result2 ] = f_get_homedata($access_token,$home_id);
+		
 			foreach ($result2 ['body']['homes'][0]['modules'] as $value)
 			{
-				if ( strpos($value['type'], 'NOC') !== false) 
+				if ( $DEBUG == true )
 				{
-					print " ".$value['id']." ".$value['name']."\n";
+					var_dump($value);
+				}
+
+				if ( strpos($value['type'], 'NOC') !== false ) 
+				{
+					printf(" ".$value['id']." ".$value['name']."\n");
 				}
 			}
+			
+			printf(" ----------------------------------------------------------------------------------- \n");
 		}
 		else
 		{
@@ -473,28 +469,35 @@ if (isset($argc))
 				if ( $argv[3] == "current" )
 				{
 					$id = $argv[4];
-					print " Active light mode : ".get_light_mode($access_token,$home_id,$id)."\n";
+					printf(" ----------------------------------------------------------------------------------- \n");
+					printf(" ".date('Y-m-d H:i:s\Z',time())." (UTC)                                              \n\n");
+					printf(" Active light mode : ".f_get_light_mode($access_token,$home_id,$id)."                \n");
+					printf(" ----------------------------------------------------------------------------------- \n");
 
 				}
-				else
+				
+				if ( ($argv[3] == "on") || ($argv[3] == "off") || ($argv[3] == "auto") )
 				{
+					printf(" ----------------------------------------------------------------------------------- \n");
+					printf(" ".date('Y-m-d H:i:s\Z',time())." (UTC)                                              \n\n");
 					$id = $argv[4];
-					print " Light mode before: ".get_light_mode($access_token,$home_id,$id)."\n";
-					set_light_mode($access_token,$home_id,$id,$light_action);
-					print " Light mode after: ".get_light_mode($access_token,$home_id,$id)."\n";
+					printf(" Light mode before: ".f_get_light_mode($access_token,$home_id,$id)."                 \n");
+					f_set_light_mode($access_token,$home_id,$id,$light_action);
+					printf(" Light mode after: ".f_get_light_mode($access_token,$home_id,$id)."                  \n");
+					printf(" ----------------------------------------------------------------------------------- \n");
 				}
 			}
 		else
 		{ 
-			usage();
-			exit(1);
+			f_usage();
+			exit(104);
 		}
 		}
 	}
 	else 
 	{ 
-		usage();
-		exit(1);
+		f_usage();
+		exit(105);
 	}
 }
 exit(0);
