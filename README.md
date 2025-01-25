@@ -35,7 +35,7 @@ It is able to manage several "home" and several cameras per home.
   
 # usage - the help
 
-``$ ./netatmo_floodlight.php  
+`$ ./netatmo_floodlight.php  
   -----------------------------------------------------------------------------------  
  2025-01-25 17:11:54Z (UTC)                                 
                                                                         
