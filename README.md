@@ -29,16 +29,6 @@ It is able to manage several "home" and several cameras per home.
 
 3/ Run the script with no option, the help is displayed
 
-# Examples
-
-![image](https://github.com/user-attachments/assets/db2f7a07-2f1a-4d9d-a4ce-4bd560d8e679)
-
-![image](https://github.com/user-attachments/assets/54c410b5-bb13-431c-a691-a62035f05452)
-
-![image](https://github.com/user-attachments/assets/da18a3a5-690f-45d1-9241-1e7a1d4cb2a8)
-
-![image](https://github.com/user-attachments/assets/54df67a3-110a-42db-92df-8817a39fa2cd)
-  
 # usage - the help
 
 `$ ./netatmo_floodlight.php  
@@ -69,6 +59,16 @@ It is able to manage several "home" and several cameras per home.
  ./netatmo_light.php 5xxxxxxxxxxxxxxxxxxxxxc light on  7x:xx:xx:xx:xx:x4  
  -----------------------------------------------------------------------------------   `
 
+# Examples
+
+![image](https://github.com/user-attachments/assets/db2f7a07-2f1a-4d9d-a4ce-4bd560d8e679)
+
+![image](https://github.com/user-attachments/assets/54c410b5-bb13-431c-a691-a62035f05452)
+
+![image](https://github.com/user-attachments/assets/da18a3a5-690f-45d1-9241-1e7a1d4cb2a8)
+
+![image](https://github.com/user-attachments/assets/54df67a3-110a-42db-92df-8817a39fa2cd)
+  
  # Return codes by function 
 
 function f_get_homedata($access_token,$home_id)  
