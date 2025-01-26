@@ -29,9 +29,15 @@ It is able to manage several "home" and several cameras per home.
 
 3/ Run the script with no option, the help is displayed
 
-# Example
+# Examples
 
-![image](https://github.com/user-attachments/assets/852c4ed0-32c6-44d8-965f-0f4351031098)
+![image](https://github.com/user-attachments/assets/db2f7a07-2f1a-4d9d-a4ce-4bd560d8e679)
+
+![image](https://github.com/user-attachments/assets/54c410b5-bb13-431c-a691-a62035f05452)
+
+![image](https://github.com/user-attachments/assets/da18a3a5-690f-45d1-9241-1e7a1d4cb2a8)
+
+![image](https://github.com/user-attachments/assets/54df67a3-110a-42db-92df-8817a39fa2cd)
   
 # usage - the help
 
