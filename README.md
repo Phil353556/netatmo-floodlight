@@ -108,6 +108,11 @@ export  NA_DEBUG=1
 or  
 export NA_DEBUG=true  
 
+To desactivate the debug mode  
+export  NA_DEBUG=0  
+or  
+export NA_DEBUG=false  
+
 # Troubleshooting   
 
  * The rights for the script must be at minimum 'execute' for the user, using the command:  
@@ -117,7 +122,3 @@ chmod u+x ./netatmo_floodlight.php
    it means the version of php is not at least version 8, needed for the function str_contains
 
 
-To desactivate the debug mode  
-export  NA_DEBUG=0  
-or  
-export NA_DEBUG=false  
