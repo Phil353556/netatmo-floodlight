@@ -4,6 +4,11 @@ Management of floodlight for Netatmo external camera
 The goal of this script is the management of floodlight of Neatmo external camera.
 It is able to manage several "home" and several cameras per home.
 
+# Pre-requisistes
+The following packages must be already available or installed on the system before using the php script supplied
+* php (mini version 8)
+* php-curl
+
 # How to start 
 1/ Use the netatmo_manage_tokens.php script from the same user. It will allow you to manage access_token and refresh token
    
@@ -102,6 +107,15 @@ if you want to activate the debug mode
 export  NA_DEBUG=1   
 or  
 export NA_DEBUG=true  
+
+# Troubleshooting   
+
+ * The rights for the script must be at minimum 'execute' for the user, using the command:  
+chmod u+x ./netatmo_floodlight.php  
+ * if the following error message is displayed: 
+    "PHP Fatal error:  Uncaught Error: Call to undefined function str_contains() "
+   it means the version of php is not at least version 8, needed for the function str_contains
+
 
 To desactivate the debug mode  
 export  NA_DEBUG=0  
